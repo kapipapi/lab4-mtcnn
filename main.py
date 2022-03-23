@@ -24,6 +24,10 @@ def main():
     detector = MTCNN()
 
     cap = cv2.VideoCapture(0)
+    cap.set(cv2.CAP_PROP_FRAME_WIDTH, 320)
+    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 180)
+    cap.set(cv2.CAP_PROP_FPS, 25)
+
     while True:
         ret, image = cap.read()
         if not ret:
@@ -43,17 +47,26 @@ def main():
                                      face['keypoints']['left_eye'],
                                      face['keypoints']['mouth_right'], face['keypoints']['mouth_left'])
 
+                pitch = ((angles[0] - angles[1]) / 2) - 10
+                yaw = (angles[3] - angles[2]) / 2
+
+                cv2.putText(image, "pitch: %.2f" % pitch, (x + int(w / 2), y),
+                            cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 1, cv2.LINE_AA)
+
+                cv2.putText(image, "yaw: %.2f" % yaw, (x + w, y + int(h / 2)),
+                            cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 1, cv2.LINE_AA)
+
                 if angles[0] > 100:
-                    cv2.putText(image, "Tilted upwards", face['keypoints']['right_eye'],
+                    cv2.putText(image, "Tilted upwards", (x + int(w / 2), y + h + int(h / 10)),
                                 cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 1, cv2.LINE_AA)
                 if angles[1] > 100:
-                    cv2.putText(image, "Tilted downwards", face['keypoints']['mouth_right'],
+                    cv2.putText(image, "Tilted downwards", (x + int(w / 2), y + h + int(h / 10)),
                                 cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 1, cv2.LINE_AA)
                 if angles[2] > 120:
-                    cv2.putText(image, "Tilted left", face['keypoints']['left_eye'],
+                    cv2.putText(image, "Tilted right", (x + int(w / 2), y + h + int(h / 10)),
                                 cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 1, cv2.LINE_AA)
                 if angles[3] > 120:
-                    cv2.putText(image, "Tilted right", face['keypoints']['right_eye'],
+                    cv2.putText(image, "Tilted left", (x + int(w / 2), y + h + int(h / 10)),
                                 cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 1, cv2.LINE_AA)
 
                 for label, keypoint in face['keypoints'].items():
